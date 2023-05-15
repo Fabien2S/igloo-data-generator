@@ -1,38 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "igloo-data-generator",
   "version": "${version}",
-
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Igloo Data Generator",
+  "description": "A Minecraft mod which export additional data, used by Igloo.",
   "authors": [
-    "Me!"
+    "Fabien2S"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://fabien2s.dev/igloo/",
+    "sources": "https://github.com/Fabien2S/igloo-data-generator"
   },
-
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
-
-  "environment": "*",
+  "icon": "assets/igloo-data-generator/icon.png",
+  "environment": "server",
   "entrypoints": {
-    "main": [
-      "net.fabricmc.example.ExampleMod"
+    "fabric-datagen": [
+      "dev.fabien2s.igloo.IglooDataGeneratorMod"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "igloo-data-generator.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.14.19",
     "fabric-api": "*",
     "minecraft": "~1.19.4",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
