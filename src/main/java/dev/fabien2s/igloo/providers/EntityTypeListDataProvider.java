@@ -18,11 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
-public class EntityTypeDataProvider implements DataProvider {
+public class EntityTypeListDataProvider implements DataProvider {
 
     private final FabricDataOutput output;
 
-    public EntityTypeDataProvider(FabricDataOutput output) {
+    public EntityTypeListDataProvider(FabricDataOutput output) {
         this.output = output;
     }
 

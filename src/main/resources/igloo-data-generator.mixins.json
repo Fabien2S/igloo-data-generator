@@ -4,6 +4,7 @@
   "package": "dev.fabien2s.igloo.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BlockBehaviourAccessor",
     "EntityTypeAccessor",
     "FeatureFlagSetAccessor"
   ],
