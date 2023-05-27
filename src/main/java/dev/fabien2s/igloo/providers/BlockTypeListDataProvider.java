@@ -2,18 +2,23 @@ package dev.fabien2s.igloo.providers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.fabien2s.igloo.mixin.BlockBehaviourAccessor;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -42,13 +47,10 @@ public class BlockTypeListDataProvider implements DataProvider {
                     blockObject.addProperty("default_state_id", Block.getId(defaultBlockState));
                 }
 
-                blockObject.addProperty("has_collision", ((BlockBehaviourAccessor) block).hasCollision());
-
-                blockObject.addProperty("explosion_resistance", block.getExplosionResistance());
-
                 blockObject.addProperty("friction", block.getFriction());
                 blockObject.addProperty("speed_factor", block.getSpeedFactor());
                 blockObject.addProperty("jump_factor", block.getJumpFactor());
+                blockObject.addProperty("explosion_resistance", block.getExplosionResistance());
 
                 JsonArray propertyContainerObject = new JsonArray();
                 {
@@ -75,6 +77,16 @@ public class BlockTypeListDataProvider implements DataProvider {
                                 }
                             }
                             stateObject.add("properties", blockStatePropertyArray);
+
+                            JsonObject shapeObject = new JsonObject();
+                            {
+                                JsonArray collisionShapeArray = serializeBlockShape(ClipContext.Block.COLLIDER, blockState);
+                                shapeObject.add("collision", collisionShapeArray);
+
+                                JsonArray outlineShapeArray = serializeBlockShape(ClipContext.Block.OUTLINE, blockState);
+                                shapeObject.add("outline", outlineShapeArray);
+                            }
+                            stateObject.add("shape", shapeObject);
                         }
                         stateContainerArray.add(stateObject);
                     }
@@ -95,4 +107,33 @@ public class BlockTypeListDataProvider implements DataProvider {
         return "Block Types";
     }
 
+    private JsonObject serializeVector(double x, double y, double z) {
+        JsonObject vectorObject = new JsonObject();
+        vectorObject.addProperty("x", x);
+        vectorObject.addProperty("y", y);
+        vectorObject.addProperty("z", z);
+        return vectorObject;
+    }
+
+    private JsonArray serializeBlockShape(ClipContext.Block blockContext, BlockState blockState) {
+        JsonArray shapeArray = new JsonArray();
+
+        VoxelShape shape = blockContext.get(
+                blockState,
+                EmptyBlockGetter.INSTANCE,
+                BlockPos.ZERO,
+                CollisionContext.empty()
+        );
+
+        for (AABB aabb : shape.toAabbs()) {
+            JsonObject aabbObject = new JsonObject();
+            aabbObject.add("min", serializeVector(aabb.minX, aabb.minY, aabb.minZ));
+            aabbObject.add("max", serializeVector(aabb.maxX, aabb.maxY, aabb.maxZ));
+            shapeArray.add(aabbObject);
+        }
+
+        return shapeArray;
+    }
+
 }
+
